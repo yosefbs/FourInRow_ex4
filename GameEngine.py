@@ -1,6 +1,6 @@
 class GameEngine:
 
-    def play_game(self,board,player1,player2,print_moves=False):
+    def play_game(self,board,player1,player2,print_moves=False,print_winner=True):
         win = False
         while True:
             selectedCol = player1.play(board.available_columns())
@@ -17,6 +17,7 @@ class GameEngine:
             if print_moves:
                 board.print_board()
                 print()
-        print('The winner is: {0} - '.format(board.winner) ,end='')
-        print(board.winner)
-        return
+        if print_winner:
+            print('The winner is: {0} - '.format(board.winner) ,end='')
+            print(board.winner)
+        return board.winner

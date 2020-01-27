@@ -9,9 +9,6 @@ class Color(IntEnum):
     YELLOW = 2
 
 
-
-
-
 class Board:
     def __init__(self):
         self.cells = np.zeros([6, 7], dtype=np.int)

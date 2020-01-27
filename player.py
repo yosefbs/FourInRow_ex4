@@ -1,6 +1,12 @@
+import concurrent
+import copy
+import operator
 import random
+from multiprocessing import Pool
+
 
 from Board import *
+from GameEngine import GameEngine
 
 
 def calc_value_for_arr(arr: np.array, color: Color):
@@ -11,6 +17,8 @@ def calc_value_for_arr(arr: np.array, color: Color):
         if cur != color:
             if cur == Color.NONE:
                 empties += 1
+            else:
+                empties =0
             repeated_in_row = 0
             continue
         repeated_in_row += 1
@@ -20,9 +28,9 @@ def calc_value_for_arr(arr: np.array, color: Color):
             break
 
     if max == 2 and empties > 2:
-        return 1
+        return MachineLogicPlayer.twoInRowReward
     elif max == 3 and empties > 0:
-        return 6
+        return MachineLogicPlayer.threeInRowReward
     elif max == 4:
         return 100
     else:
@@ -47,6 +55,9 @@ def calc_value_for_point(board : Board, col_id,row_id, color):
     return value
 
 class MachineLogicPlayer:
+    twoInRowReward=1
+    threeInRowReward = 6
+
     def __init__(self, board: Board, color: Color):
         self.board = board
         self.color = color
@@ -81,6 +92,47 @@ class MachineRandomPlayer:
     def play(self, avilableCol: list):
         return random.choice(avilableCol)
 
+class MonteCarloPlayer:
+    def simulateGamesForCol(self, col):
+        b = copy.deepcopy(self.board)
+        win = b.add_to_col(col, self.color)
+        if win:
+            return self.N
+        color = self.color
+        p1 = MachineRandomPlayer(Color.RED if color == Color.YELLOW else Color.YELLOW)
+        p2 = MachineRandomPlayer(color)
+        eng = GameEngine()
+        wins = 0
+        for i in range(self.N):
+            winner = eng.play_game(copy.deepcopy(b), p1, p2, False, False)
+            if winner == color:
+                wins += 1
+        # self.gamesWinsVec[col] = wins
+        return  wins
+
+    def __init__(self, board: Board, color: Color):
+        self.board = board
+        self.color = color
+        self.N=100
+
+        self.gamesWinsVec = {}
+
+    def play(self, avilable_col: list):
+        gamesCalcsVec = {}
+        self.gamesWinsVec = {}
+        p = Pool()
+        res= p.map(self.simulateGamesForCol, avilable_col)
+        # for col in avilable_col:
+        #     with concurrent.futures.ThreadPoolExecutor() as executor:
+        #         colCalc = executor.submit(simulateGamesForCol,self.board, col,self.color,self.N)
+        #         gamesCalcsVec[col] = colCalc
+        #
+        # for col in avilable_col:
+        #     gamesWinsVec[col] = gamesCalcsVec[col].result()
+
+        # print(res)
+        return res.index(max(res))
+        # max(self.gamesWinsVec.items(), key=operator.itemgetter(1))[0]
 
 class HumanPlayer:
     def __init__(self, color: Color):
@@ -91,8 +143,7 @@ class HumanPlayer:
         print(*avilableCol)
         val = input()
 
-        return val
-
+        return int(val)
 
 class DebugPlayer:
     def __init__(self,color: Color):
