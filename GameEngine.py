@@ -1,5 +1,7 @@
-class GameEngine:
 
+
+class GameEngine:
+    WORKER_POOL = None
     def play_game(self,board,player1,player2,print_moves=False,print_winner=True):
         win = False
         while True:
@@ -21,3 +23,5 @@ class GameEngine:
             print('The winner is: {0} - '.format(board.winner) ,end='')
             print(board.winner)
         return board.winner
+
+

@@ -2,12 +2,10 @@ from enum import IntEnum
 
 import numpy as np
 
-
 class Color(IntEnum):
     NONE = 0
     RED = 1
     YELLOW = 2
-
 
 class Board:
     def __init__(self):
