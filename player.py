@@ -93,15 +93,15 @@ class MachineRandomPlayer:
 
 
 class GameData:
-    def __init__(self, borad, color, col, n):
-        self.borad = borad
+    def __init__(self, board, color, col, n):
+        self.board = board
         self.color = color
         self.col = col
         self.N = n
 
 
 def simulateGamesForCol(game: GameData):
-    win = game.borad.add_to_col(game.col, game.color)
+    win = game.board.add_to_col(game.col, game.color)
     if win:
         return game.N
     p1 = MachineRandomPlayer(Color.RED if game.color == Color.YELLOW else Color.YELLOW)
@@ -109,7 +109,7 @@ def simulateGamesForCol(game: GameData):
     eng = GameEngine()
     wins = 0
     for i in range(game.N):
-        winner = eng.play_game(copy.deepcopy(game.borad), p1, p2, False, False)
+        winner = eng.play_game(copy.deepcopy(game.board), p1, p2, False, False)
         if winner == game.color:
             wins += 1
     return wins
@@ -124,27 +124,10 @@ class MonteCarloPlayer:
 
     def play(self, avilable_col: list):
         games = []
-        gamesWinsVec = {}
         for col in avilable_col:
-            games.append(GameData(copy.deepcopy(self.board), self.color, col,self.N))
-            # gamesWinsVec[col] = self.simulateGamesForCol(col)
+            games.append(GameData(copy.deepcopy(self.board), self.color, col, self.N))
         res = GameEngine.WORKER_POOL.map(simulateGamesForCol, games)
-        # p = Pool(2)
-        # res = p.map(self.simulateGamesForCol, avilable_col)
-        # for col in avilable_col:
-        #     with concurrent.futures.ThreadPoolExecutor() as executor:
-        #         colCalc = executor.submit(simulateGamesForCol,self.board, col,self.color,self.N)
-        #         gamesCalcsVec[col] = colCalc
-        #
-        # for col in avilable_col:
-        #     gamesWinsVec[col] = gamesCalcsVec[col].result()
-
-        # print(res)
         return res.index(max(res))
-        # return max(gamesWinsVec.items(), key=operator.itemgetter(1))[0]
-
-
-
 
 
 class HumanPlayer:
