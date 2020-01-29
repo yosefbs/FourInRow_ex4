@@ -1,5 +1,5 @@
-import concurrent
 import copy
+import multiprocessing
 import operator
 import random
 from multiprocessing import Pool
@@ -107,21 +107,21 @@ class MonteCarloPlayer:
             winner = eng.play_game(copy.deepcopy(b), p1, p2, False, False)
             if winner == color:
                 wins += 1
-        # self.gamesWinsVec[col] = wins
-        return  wins
+        return wins
 
     def __init__(self, board: Board, color: Color):
         self.board = board
         self.color = color
-        self.N=100
-
-        self.gamesWinsVec = {}
+        self.N=500
 
     def play(self, avilable_col: list):
         gamesCalcsVec = {}
-        self.gamesWinsVec = {}
-        p = Pool()
-        res= p.map(self.simulateGamesForCol, avilable_col)
+        gamesWinsVec = {}
+        for col in avilable_col:
+            gamesWinsVec[col] = self.simulateGamesForCol(col)
+        # res= WORKER_POOL.map(self.simulateGamesForCol,avilable_col)
+        # p = Pool(2)
+        # res = p.map(self.simulateGamesForCol, avilable_col)
         # for col in avilable_col:
         #     with concurrent.futures.ThreadPoolExecutor() as executor:
         #         colCalc = executor.submit(simulateGamesForCol,self.board, col,self.color,self.N)
@@ -131,8 +131,11 @@ class MonteCarloPlayer:
         #     gamesWinsVec[col] = gamesCalcsVec[col].result()
 
         # print(res)
-        return res.index(max(res))
-        # max(self.gamesWinsVec.items(), key=operator.itemgetter(1))[0]
+        # return res.index(max(res))
+        return max(gamesWinsVec.items(), key=operator.itemgetter(1))[0]
+
+
+WORKER_POOL = multiprocessing.Pool(processes=2)
 
 class HumanPlayer:
     def __init__(self, color: Color):
