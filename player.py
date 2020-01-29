@@ -4,6 +4,7 @@ import operator
 import random
 from multiprocessing import Pool
 
+import numpy as np
 
 from Board import *
 from GameEngine import GameEngine
