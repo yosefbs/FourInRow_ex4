@@ -1,5 +1,6 @@
 import datetime
 import multiprocessing
+import operator
 
 from player import *
 from Board import Board, Color
@@ -41,20 +42,25 @@ def runMultiGames(num_of_play, run_name=""):
 def tuneLogicalPlayer():
     # wins = {}
     run_games = 10
-    hill_claiming_runs = 1000
-    MonteCarloPlayer.N = 50
+    hill_climbing_runs = 1000
+    MonteCarloPlayer.N = 300
     MachineLogicPlayer.twoInRowReward = 0
     max_wins = 0
-    reward_change_diff = 0.5
-    for i in range(hill_claiming_runs):
+    prev_step_wins = 0
+    reward_change_diff = 4
+    direct = [operator.add, operator.sub]  # hill claiming direct up(add) or down(sub)
+    cur_direct_index = 0
+    for i in range(hill_climbing_runs):
         wins = runMultiGames(run_games, 'reward = {0}'.format(MachineLogicPlayer.twoInRowReward))
         print(printFormat.format(MachineLogicPlayer.twoInRowReward, wins, run_games, wins / run_games))
         if wins > max_wins:
             max_wins = wins
-            MachineLogicPlayer.twoInRowReward += reward_change_diff
-        else:
-            reward_change_diff = reward_change_diff/2
-            MachineLogicPlayer.twoInRowReward -= reward_change_diff
+
+        if wins < prev_step_wins:
+            reward_change_diff = reward_change_diff / 2
+            cur_direct_index = (cur_direct_index + 1) % 2
+        MachineLogicPlayer.twoInRowReward =direct[cur_direct_index](MachineLogicPlayer.twoInRowReward,reward_change_diff)
+        prev_step_wins = wins
 
     # for i in range(2, 8):
     #     MachineLogicPlayer.twoInRowReward = i
