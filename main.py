@@ -48,7 +48,7 @@ def tuneLogicalPlayer():
     reward_change_diff = 0.5
     for i in range(hill_claiming_runs):
         wins = runMultiGames(run_games, 'reward = {0}'.format(MachineLogicPlayer.twoInRowReward))
-        print(printFormat.format(i, wins, run_games, wins / run_games))
+        print(printFormat.format(MachineLogicPlayer.twoInRowReward, wins, run_games, wins / run_games))
         if wins > max_wins:
             max_wins = wins
             MachineLogicPlayer.twoInRowReward += reward_change_diff
