@@ -116,16 +116,16 @@ def simulateGamesForCol(game: GameData):
 
 
 class MonteCarloPlayer:
-
+    N = 500
     def __init__(self, board: Board, color: Color):
         self.board = board
         self.color = color
-        self.N = 500
+
 
     def play(self, avilable_col: list):
         games = []
         for col in avilable_col:
-            games.append(GameData(copy.deepcopy(self.board), self.color, col, self.N))
+            games.append(GameData(copy.deepcopy(self.board), self.color, col, MonteCarloPlayer.N))
         res = GameEngine.WORKER_POOL.map(simulateGamesForCol, games)
         return res.index(max(res))
 
