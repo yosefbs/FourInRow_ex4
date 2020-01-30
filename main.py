@@ -53,7 +53,7 @@ def tuneLogicalPlayer():
             max_wins = wins
             MachineLogicPlayer.twoInRowReward += reward_change_diff
         else:
-            reward_change_diff = reward_change_diff
+            reward_change_diff = reward_change_diff/2
             MachineLogicPlayer.twoInRowReward -= reward_change_diff
 
     # for i in range(2, 8):
