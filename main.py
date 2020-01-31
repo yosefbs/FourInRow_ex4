@@ -41,9 +41,9 @@ def runMultiGames(num_of_play, run_name=""):
 # the function change the reward for some state and check the impact of wining statistic
 def tuneLogicalPlayer():
     # wins = {}
-    run_games = 10
+    run_games = 100
     hill_climbing_runs = 1000
-    MonteCarloPlayer.N = 300
+    MonteCarloPlayer.N = 500
     MachineLogicPlayer.twoInRowReward = 0
     max_wins = 0
     prev_step_wins = 0
